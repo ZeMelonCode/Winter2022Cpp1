@@ -7,6 +7,7 @@ public class Player : MonoBehaviour
 {
     public bool verbose = false;
     public bool isGrounded;
+    public bool fire = false;
 
 
     Rigidbody2D rb;
@@ -84,10 +85,19 @@ public class Player : MonoBehaviour
             rb.AddForce(Vector2.up * jumpForce);
         }
 
+        if(Input.GetKeyDown("left ctrl")){
+            anim.SetBool("Fire", true);
+        }
+        
+        if(Input.GetKeyUp("left ctrl")){
+            anim.SetBool("Fire", false);
+        }
+
         Vector2 moveDir = new Vector2(hInput * speed, rb.velocity.y);
         rb.velocity = moveDir;
 
         anim.SetFloat("xVel", Mathf.Abs(hInput));
         anim.SetBool("isGrounded", isGrounded);
+        
     }
 }
