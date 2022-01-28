@@ -83,7 +83,34 @@ public class Player : MonoBehaviour
         {
             rb.velocity = Vector2.zero;
             rb.AddForce(Vector2.up * jumpForce);
+
         }
+
+
+        
+
+            if(Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                Debug.Log("PressedUP");
+                anim.SetBool("JumpFire" , true);
+                Debug.Log(anim.GetBool("JumpFire"));
+            }
+
+            if(Input.GetKeyUp(KeyCode.UpArrow))
+            {
+                Debug.Log("PressedDown");
+                anim.SetBool("JumpFire" , false);
+                Debug.Log(anim.GetBool("JumpFire"));
+
+            }
+
+        
+             
+
+
+
+      
+        
 
         if(Input.GetKeyDown("left ctrl")){
             anim.SetBool("Fire", true);
@@ -98,6 +125,7 @@ public class Player : MonoBehaviour
 
         anim.SetFloat("xVel", Mathf.Abs(hInput));
         anim.SetBool("isGrounded", isGrounded);
+        
         
     }
 }
