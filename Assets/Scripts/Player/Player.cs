@@ -7,7 +7,6 @@ public class Player : MonoBehaviour
 {
     public bool verbose = false;
     public bool isGrounded;
-    public bool fire = false;
 
 
     Rigidbody2D rb;
@@ -75,6 +74,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        AnimatorClipInfo[] curPlayingClip = anim.GetCurrentAnimatorClipInfo(0);
         float hInput = Input.GetAxisRaw("Horizontal");
 
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, isGroundLayer);
@@ -83,49 +83,24 @@ public class Player : MonoBehaviour
         {
             rb.velocity = Vector2.zero;
             rb.AddForce(Vector2.up * jumpForce);
-
-        }
-
-
-        
-
-            if(Input.GetKeyDown(KeyCode.UpArrow))
-            {
-                Debug.Log("PressedUP");
-                anim.SetBool("JumpFire" , true);
-                Debug.Log(anim.GetBool("JumpFire"));
-            }
-
-            if(Input.GetKeyUp(KeyCode.UpArrow))
-            {
-                Debug.Log("PressedDown");
-                anim.SetBool("JumpFire" , false);
-                Debug.Log(anim.GetBool("JumpFire"));
-
-            }
-
-        
-             
-
-
-
-      
-        
-
-        if(Input.GetKeyDown("left ctrl")){
-            anim.SetBool("Fire", true);
         }
         
-        if(Input.GetKeyUp("left ctrl")){
-            anim.SetBool("Fire", false);
-        }
 
-        Vector2 moveDir = new Vector2(hInput * speed, rb.velocity.y);
-        rb.velocity = moveDir;
+        if (curPlayingClip[0].clip.name != "Fire")
+        {
+            Vector2 moveDir = new Vector2(hInput * speed, rb.velocity.y);
+            rb.velocity = moveDir;
+        }
+        else
+        {
+            rb.velocity = Vector2.zero;
+        }
 
         anim.SetFloat("xVel", Mathf.Abs(hInput));
         anim.SetBool("isGrounded", isGrounded);
-        
+
+        if (hInput > 0 && sr.flipX || hInput < 0 && !sr.flipX)
+            sr.flipX = !sr.flipX;
         
     }
 }
