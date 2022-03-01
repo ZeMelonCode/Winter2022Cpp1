@@ -6,7 +6,7 @@ public class EnemyTurret : Enemy
 {
     [SerializeField] float projectileForce;
     [SerializeField] float projectileFireRate;
-    [SerializeField] float range ;
+    [SerializeField] float turretFireDistance;
 
     float timeSinceLastFire;
 
@@ -14,8 +14,6 @@ public class EnemyTurret : Enemy
     public Transform projectileSpawnPointLeft;
 
     public Projectile projectilePrefab;
-    public bool flipped ;
-    private bool withinRange = false;
 
     // Start is called before the first frame update
     public override void Start()
@@ -27,8 +25,8 @@ public class EnemyTurret : Enemy
         if (projectileFireRate <= 0)
             projectileFireRate = 2.0f;
 
-        if (range <= 0)
-            range = 5f;
+        if (turretFireDistance <= 0)
+            turretFireDistance = 5.0f;
 
         if (!projectilePrefab)
         {
@@ -56,47 +54,49 @@ public class EnemyTurret : Enemy
     // Update is called once per frame
     void Update()
     {
-        if(GameObject.Find("Player").transform.position.x >= (transform.position.x - range) && GameObject.Find("Player").transform.position.x <= (transform.position.x + range))
+        if (!anim.GetBool("Fire"))
         {
-            withinRange = true;
-        }
-        else
-        {
-            withinRange = false;
-        }
-        if (!anim.GetBool("Fire") && withinRange)
-        {
+            //HINT = THIS IS WHERE YOU WOULD CHECK DIRECTION/DISTANCE TO TARGET/ETC.
+            if (GameManager.instance.playerInstance)
+            {
+                if (GameManager.instance.playerInstance.transform.position.x < transform.position.x)
+                {
+                    sr.flipX = true;
+                }
+                else
+                {
+                    sr.flipX = false;
+                }
+            }
+
+            float distance = Vector2.Distance(transform.position, GameManager.instance.playerInstance.transform.position);
+
+            if (distance <= turretFireDistance)
+            {
                 if (Time.time >= timeSinceLastFire + projectileFireRate)
                 {
                     anim.SetBool("Fire", true);
-                }    
-        }
-        if(GameObject.Find("Player").transform.position.x > transform.position.x && flipped && (GameObject.Find("Player").transform.position.x - transform.position.x) <= range)
-        {
-            flipped = false;
-            sr.flipX = !sr.flipX;
-        }
-        if(GameObject.Find("Player").transform.position.x < transform.position.x && !flipped && (transform.position.x - GameObject.Find("Player").transform.position.x) <= range)
-        {
-            flipped = true;
-            sr.flipX = !sr.flipX;
+                }
+            }  
         }
         
     }
 
     public void Fire()
     {
-            timeSinceLastFire = Time.time;
-            if(!flipped)
-            {
-                Projectile temp = Instantiate(projectilePrefab, projectileSpawnPointRight.position, projectileSpawnPointRight.rotation);
-                temp.speed = projectileForce;
-            }
-            if(flipped)
-            {
-                Projectile temp = Instantiate(projectilePrefab, projectileSpawnPointLeft.position, projectileSpawnPointLeft.rotation);
-                temp.speed = -projectileForce;
-            }
+        timeSinceLastFire = Time.time;
+
+        if (sr.flipX)
+        {
+            Projectile temp = Instantiate(projectilePrefab, projectileSpawnPointLeft.position, projectileSpawnPointLeft.rotation);
+            temp.speed = -projectileForce;
+        }
+        else
+        {
+            Projectile temp = Instantiate(projectilePrefab, projectileSpawnPointRight.position, projectileSpawnPointRight.rotation);
+            temp.speed = projectileForce;
+        }
+        
     }
 
     public void ReturnToIdle()
