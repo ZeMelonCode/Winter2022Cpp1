@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.Events;
 
 public class GameManager : MonoBehaviour
 {
@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     int _lives = 1;
     public int maxLives = 3;
     public GameObject playerPrefab;
+    private bool isPaused = false;
 
     public int score
     {
@@ -24,6 +25,7 @@ public class GameManager : MonoBehaviour
         set
         {
             _score = value;
+            onScoreValueChange.Invoke(value);
             Debug.Log("Score Set To: " + score.ToString());
         }
     }
@@ -45,17 +47,22 @@ public class GameManager : MonoBehaviour
             if (_lives > maxLives)
                 _lives = maxLives;
 
-            if (_lives <= 0)
+            onLifeValueChange.Invoke(value);
+
+            if (_lives < 0)
             {
                 //gameover stuff here
-                Debug.Log("Gameover");
-                SceneManager.LoadScene("Gameover");
+
+                
             }
 
             Debug.Log("Lives Set To: " + lives.ToString());
 
         }
     }
+
+    [HideInInspector]public UnityEvent<int> onLifeValueChange;
+    [HideInInspector]public UnityEvent<int> onScoreValueChange;
 
     [HideInInspector] public GameObject playerInstance;
     [HideInInspector] public Level currentLevel;
@@ -77,12 +84,25 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Backspace))
+        //if (Input.GetKeyDown(KeyCode.Backspace))
+        //{
+        //    if (SceneManager.GetActiveScene().name == "Test")
+        //        SceneManager.LoadScene("SampleScene");
+        //    else
+        //        SceneManager.LoadScene("Test");
+        //}
+        if(Input.GetKeyDown(KeyCode.P))
         {
-            if (SceneManager.GetActiveScene().name == "Test")
-                SceneManager.LoadScene("SampleScene");
+            if(!isPaused)
+            {
+             Time.timeScale = 0;
+             isPaused = true;
+            }
             else
-                SceneManager.LoadScene("Test");
+            {
+                Time.timeScale = 1;
+                isPaused = false;
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.UpArrow))
@@ -90,23 +110,13 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if(SceneManager.GetActiveScene().name == "Gameover")
-            {
-                SceneManager.LoadScene("Mainmenu");
-            }
-            else if(SceneManager.GetActiveScene().name == "Mainmenu")
-            {
-                SceneManager.LoadScene("SampleScene");
-            }
-            else
-            {
-                #if UNITY_EDITOR
-                    UnityEditor.EditorApplication.isPlaying = false;
-                #else
-                    Application.Quit();
-                #endif
-             }
+        #if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+        #else
+            Application.Quit();
+        #endif
         }
+
     }
 
     public void SpawnPlayer(Transform spawnLocation)
