@@ -53,6 +53,9 @@ public class EnemyWalker : Enemy
     {
         anim.SetBool("Squish", true);
         rb.velocity = Vector2.zero;
+        base.Death();
+        anim.SetBool("Death", true);
+        rb.velocity = Vector2.zero;
         Destroy(transform.parent.gameObject, 1f);
     }
 

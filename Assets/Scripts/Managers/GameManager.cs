@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-
+using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
 
@@ -17,7 +17,6 @@ public class GameManager : MonoBehaviour
     int _lives = 1;
     public int maxLives = 3;
     public GameObject playerPrefab;
-    private bool isPaused = false;
 
     public int score
     {
@@ -52,8 +51,7 @@ public class GameManager : MonoBehaviour
             if (_lives < 0)
             {
                 //gameover stuff here
-
-                
+                SceneManager.LoadScene("Gameover");
             }
 
             Debug.Log("Lives Set To: " + lives.ToString());
@@ -91,19 +89,6 @@ public class GameManager : MonoBehaviour
         //    else
         //        SceneManager.LoadScene("Test");
         //}
-        if(Input.GetKeyDown(KeyCode.P))
-        {
-            if(!isPaused)
-            {
-             Time.timeScale = 0;
-             isPaused = true;
-            }
-            else
-            {
-                Time.timeScale = 1;
-                isPaused = false;
-            }
-        }
 
         if (Input.GetKeyDown(KeyCode.UpArrow))
             lives--;

@@ -14,6 +14,7 @@ public class CanvasManager : MonoBehaviour
     public Button returnToMenuButton;
     public Button returnToGameButton;
 
+
     [Header("Menus")]
     public GameObject mainMenu;
     public GameObject pauseMenu;
@@ -26,7 +27,7 @@ public class CanvasManager : MonoBehaviour
 
     [Header("Slider")]
     public Slider volSlider;
-    private bool isPaused = false;
+
 
 
     public void ShowMainMenu()
@@ -41,41 +42,21 @@ public class CanvasManager : MonoBehaviour
         settingsMenu.SetActive(true);
     }
 
-    public void QuitGame()
-    {
-        #if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-        #else
-            Application.Quit();
-        #endif
-    }
-
     public void StartGame()
     {
         SceneManager.LoadScene("Level");
     }
 
-    public void GoMenu()
+    public void BackToMenu()
     {
-        SceneManager.LoadScene("Mainmenu");
+        SceneManager.LoadScene("MainMenu");
     }
 
-    public void ResumeGame()
-    {          
-            pauseMenu.SetActive(!pauseMenu.activeSelf);
-            if (pauseMenu.activeSelf)
-                {
-                     Time.timeScale = 0;
-                     isPaused = true;
-                }
-                else
-                {
-                    Time.timeScale = 1;
-                     isPaused = false;
-                }   
+    public void PauseMenu()
+    {
+        pauseMenu.SetActive(!pauseMenu.activeSelf);
+        Time.timeScale = 1;
     }
-
-
     // Start is called before the first frame update
     void Start()
     {
@@ -85,15 +66,6 @@ public class CanvasManager : MonoBehaviour
         if (settingsButton)
             settingsButton.onClick.AddListener(() => ShowSettingsMenu());
 
-        if (quitButton)
-            quitButton.onClick.AddListener(() => QuitGame());
-            
-        if (returnToMenuButton)
-            returnToMenuButton.onClick.AddListener(() => GoMenu());
-
-        if (returnToGameButton)
-            returnToGameButton.onClick.AddListener(() => ResumeGame());    
-
         if (backButton)
             backButton.onClick.AddListener(() => ShowMainMenu());
 
@@ -101,6 +73,16 @@ public class CanvasManager : MonoBehaviour
         {
             volSlider.onValueChanged.AddListener((value) => OnSliderValueChange(value));
             volSliderText.text = volSlider.value.ToString();
+        }
+
+        if (returnToGameButton)
+        {
+            returnToGameButton.onClick.AddListener(() => PauseMenu());
+        }
+
+         if (returnToMenuButton)
+        {
+            returnToMenuButton.onClick.AddListener(() => BackToMenu());
         }
 
         if (livesText)
@@ -118,8 +100,9 @@ public class CanvasManager : MonoBehaviour
     void OnLifeValueChange(int value)
     {
         livesText.text = value.ToString();
+        
     }
-    
+
     void OnScoreValueChange(int value)
     {
         scoreText.text = value.ToString();
@@ -133,19 +116,21 @@ public class CanvasManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.P))
             {
                 pauseMenu.SetActive(!pauseMenu.activeSelf);
-
-                //HUGE HINT FOR THE LAB
+               
+               
             }
-                if (pauseMenu.activeSelf)
-                {
-                     Time.timeScale = 0;
-                     isPaused = true;
-                }
-                else
-                {
-                    Time.timeScale = 1;
-                     isPaused = false;
-                }
+
+            //HUGE HINT FOR THE LAB
+            if (pauseMenu.activeSelf)
+            {
+                //do something to pause the game
+                 Time.timeScale = 0;
+            }
+            else
+            {
+                //unpause the game
+                  Time.timeScale = 1;
+            }
         }    
         
     }
